@@ -1614,7 +1614,17 @@ namespace FloorplanDesigner
 
         private void 儲存檔案ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            for(int i =0;i< softmodules.Count;i++)
+            {
+                List<Point> points = new List<Point>();
+                for (int j = 0; j < softmodules[i].getChips().Count; j++)
+                    points.Add(softmodules[i].getChips()[j].getPoint());
+                if(HasMultipleAreas(points))
+                {
+                    MessageBox.Show(softmodules[i].getName() + " 存在兩個以上的區塊錯誤", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
             if (outputFilePath == null)
             {
                 另存布局檔案ToolStripMenuItem_Click(sender, e);
@@ -1658,6 +1668,47 @@ namespace FloorplanDesigner
             isModify = false;
         }
 
+        // 判斷是否存在兩個以上的區域
+        bool HasMultipleAreas(List<Point> points)
+        {
+            HashSet<Point> visited = new HashSet<Point>();
+            int areaCount = 0;
+
+            foreach (var point in points)
+            {
+                if (!visited.Contains(point))
+                {
+                    DepthFirstSearch(points, point, visited);
+                    areaCount++;
+                }
+            }
+
+            return areaCount >= 2;
+        }
+
+        // 使用深度優先搜索 (DFS) 來訪問區域中的點
+        void DepthFirstSearch(List<Point> points, Point currentPoint, HashSet<Point> visited)
+        {
+            visited.Add(currentPoint);
+
+            // 定義上、下、左、右四個方向
+            int[] dx = { -1, 1, 0, 0 };
+            int[] dy = { 0, 0, -1, 1 };
+
+            for (int i = 0; i < 4; i++)
+            {
+                int newX = currentPoint.X + dx[i];
+                int newY = currentPoint.Y + dy[i];
+                Point neighbor = new Point(newX, newY);
+
+                if (points.Contains(neighbor) && !visited.Contains(neighbor))
+                {
+                    DepthFirstSearch(points, neighbor, visited);
+                }
+            }
+        }
+
+
         private void Form3_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (isModify)
@@ -1680,7 +1731,17 @@ namespace FloorplanDesigner
 
         private void 另存布局檔案ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            for (int i = 0; i < softmodules.Count; i++)
+            {
+                List<Point> points = new List<Point>();
+                for (int j = 0; j < softmodules[i].getChips().Count; j++)
+                    points.Add(softmodules[i].getChips()[j].getPoint());
+                if (HasMultipleAreas(points))
+                {
+                    MessageBox.Show(softmodules[i].getName() + " 存在兩個以上的區塊錯誤", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
             saveFileDialog1.Filter = "Text Files (*.txt)|*.txt";
