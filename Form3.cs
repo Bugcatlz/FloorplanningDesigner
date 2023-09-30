@@ -47,9 +47,21 @@ namespace FloorplanDesigner
                 this.height = other.height;
                 this.point = other.point;
                 this.rectangle = other.rectangle;
-
-                this.modules = new List<Module>(other.modules);
+                this.modules = new List<Module>();
+                for(int i =0;i<other.modules.Count;i++)
+                    modules.Add(other.modules[i]);
+                //this.modules = new List<Module>(other.modules);
                 
+            }
+
+            public Chip clone()
+            {
+                Chip chip = new Chip();
+                chip.width = this.width;
+                chip.height = this.height;
+                chip.point = new Point(this.point.X, this.point.Y);
+                chip.rectangle = new Rectangle(this.rectangle.X ,this.rectangle.Y,this.rectangle.Width,this.rectangle.Height);
+                return chip;
             }
 
             public override bool Equals(object obj)
@@ -91,6 +103,11 @@ namespace FloorplanDesigner
             public void reMoveModule(Module module)
             {
                 modules.Remove(module);
+            }
+
+            public void removeAllModule()
+            {
+                modules.Clear();
             }
 
             //回傳屬於這個chip且enable的modules
@@ -152,7 +169,10 @@ namespace FloorplanDesigner
                 this.gp = (GraphicsPath)other.gp.Clone();
 
                 // 創建新的chips列表，並複製Chip
-                this.chips = new List<Chip>(other.chips);
+                this.chips = new List<Chip>();
+                for (int i = 0; i < other.chips.Count; i++)
+                    this.chips.Add(other.chips[i].clone());
+                //this.chips = new List<Chip>(other.chips);
                 
             }
 
@@ -237,7 +257,13 @@ namespace FloorplanDesigner
 
             public void reMoveChip(Chip chip)
             {
-                chips.Remove(chip);
+                for(int i =0;i<chips.Count;i++)
+                {
+                    if (chips[i].getPoint().X == chip.getPoint().X && chips[i].getPoint().Y == chip.getPoint().Y)
+                        chips.Remove(chips[i]);
+                }
+
+                //chips.Remove(chip);
             }
             public List<Chip> getChips()
             {
@@ -452,8 +478,8 @@ namespace FloorplanDesigner
         private string inputFilePath;
         private string outputFilePath;
         private int width,height;
-        private Stack<(List<List<Chip>> Chips, List<Module> Modules)> undoStack;
-        private Stack<(List<List<Chip>> Chips, List<Module> Modules)> redoStack;
+        private Stack<(List<List<List<string>>> ChipsContainModuleNames, List<List<Point>> ModulesContainChipsPoints)> undoStack;
+        private Stack<(List<List<List<string>>> ChipsContainModuleNames, List<List<Point>> ModulesContainChipsPoints)> redoStack;
         bool isModify = false;
 
         //編輯module變數
@@ -468,7 +494,7 @@ namespace FloorplanDesigner
             InitializeComponent();
             readFile();
             this.Resize += formResize;
-            儲存檔案ToolStripMenuItem.Enabled = false;
+            //儲存檔案ToolStripMenuItem.Enabled = false;
         }
         private void Form3_Load(object sender, EventArgs e)
         {
@@ -483,8 +509,8 @@ namespace FloorplanDesigner
         public void readFile()
         {
             isModify = false;
-            undoStack = new Stack<(List<List<Chip>>, List<Module>)>();
-            redoStack = new Stack<(List<List<Chip>>, List<Module>)>();
+            undoStack = new Stack<(List<List<List<string>>> , List<List<Point>>)>();
+            redoStack = new Stack<(List<List<List<string>>>, List<List<Point>>)>();
             toolStripButton2.Enabled = false;
             toolStripButton3.Enabled = false;
             //讀取輸入檔
@@ -528,14 +554,30 @@ namespace FloorplanDesigner
         }
         private void 開啟設定檔案ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (isModify)
+            {
+                DialogResult result = MessageBox.Show("您有未儲存的變更，是否要儲存？", "提醒", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                if (result == DialogResult.Yes)
+                {
+                    if (outputFilePath != null)
+                        儲存檔案ToolStripMenuItem_Click(sender, e);
+                    else
+                        另存布局檔案ToolStripMenuItem_Click(sender, e);
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    // 取消
+                    return;
+                }
+            }
             readFile();
         }
 
         public void readTempFile(string filePath)
         {
             isModify = false;
-            undoStack = new Stack<(List<List<Chip>>, List<Module>)>();
-            redoStack = new Stack<(List<List<Chip>>, List<Module>)>();
+            undoStack = new Stack<(List<List<List<string>>>, List<List<Point>>)>();
+            redoStack = new Stack<(List<List<List<string>>>, List<List<Point>>)>();
             toolStripButton2.Enabled = false;
             toolStripButton3.Enabled = false;
             //讀取輸入檔
@@ -570,9 +612,25 @@ namespace FloorplanDesigner
 
         private void 匯入檔案ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (isModify)
+            {
+                DialogResult result = MessageBox.Show("您有未儲存的變更，是否要儲存？", "提醒", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                if (result == DialogResult.Yes)
+                {
+                    if (outputFilePath != null)
+                        儲存檔案ToolStripMenuItem_Click(sender, e);
+                    else
+                        另存布局檔案ToolStripMenuItem_Click(sender, e);
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    // 取消
+                    return;
+                }
+            }
             isModify = false;
-            undoStack = new Stack<(List<List<Chip>>, List<Module>)>();
-            redoStack = new Stack<(List<List<Chip>>, List<Module>)>();
+            undoStack = new Stack<(List<List<List<string>>>, List<List<Point>>)>();
+            redoStack = new Stack<(List<List<List<string>>>, List<List<Point>>)>();
             toolStripButton2.Enabled = false;
             toolStripButton3.Enabled = false;
             //讀取輸入檔
@@ -767,8 +825,11 @@ namespace FloorplanDesigner
         private void formResize(object sender, EventArgs e)
         {
             resizeChipUnitSize(chips);
-            Stack<(List<List<Chip>> Chips, List<Module> Modules)> TempUndoStack = new Stack<(List<List<Chip>>, List<Module>)>(undoStack);
-            Stack<(List<List<Chip>> Chips, List<Module> Modules)> TempedoStack =  new Stack<(List<List<Chip>>, List<Module>)>(redoStack);
+
+            Stack<(List<List<List<string>>> ChipsContainModuleNames, List<List<Point>> ModulesContainChipsPoints)> TempUndoStack =
+                new Stack<(List<List<List<string>>>, List<List<Point>>)>(undoStack);
+            Stack<(List<List<List<string>>> ChipsContainModuleNames, List<List<Point>> ModulesContainChipsPoints)> TempedoStack = 
+                new Stack<(List<List<List<string>>>, List<List<Point>>)>(redoStack);
             
             draw();
         }
@@ -1068,7 +1129,7 @@ namespace FloorplanDesigner
                         if (!r2.IsEmpty(g))
                         {
                             chips[j][k].addModule(modules[i]);
-                            modules[i].addChip(chips[j][k]);
+                            modules[i].addChip(chips[j][k].clone());
                         }
                     }
                 }
@@ -1553,6 +1614,12 @@ namespace FloorplanDesigner
 
         private void 儲存檔案ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            
+            if (outputFilePath == null)
+            {
+                另存布局檔案ToolStripMenuItem_Click(sender, e);
+                return;
+            }
             StreamWriter writeFile = new StreamWriter(outputFilePath);
 
             List<List<int>> table = new List<List<int>>();
@@ -1570,7 +1637,7 @@ namespace FloorplanDesigner
             }
             List<List<int>> rectangleData = FindAllRectRange(table);
 
-            writeFile.WriteLine($"HPWL {HPWL}");
+            writeFile.WriteLine($"HPWL {total}");
             writeFile.WriteLine($"SOFTMODULE {softmodules.Count}");
             List<List<int>> Points = new List<List<int>>();
             for (int i = 0; i < softmodules.Count; ++i)
@@ -1613,6 +1680,7 @@ namespace FloorplanDesigner
 
         private void 另存布局檔案ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
             saveFileDialog1.Filter = "Text Files (*.txt)|*.txt";
@@ -1639,7 +1707,7 @@ namespace FloorplanDesigner
             }
             List<List<int>> rectangleData = FindAllRectRange(table);
 
-            writeFile.WriteLine($"HPWL {HPWL}");
+            writeFile.WriteLine($"HPWL {total}");
             writeFile.WriteLine($"SOFTMODULE {softmodules.Count}");
             List<List<int>> Points = new List<List<int>>();
             for (int i = 0; i < softmodules.Count; ++i)
@@ -1960,6 +2028,10 @@ namespace FloorplanDesigner
         {
             if (pictureBox1.Image == null)
                 return;
+            pushStack(undoStack);
+            redoStack.Clear();
+            toolStripButton2.Enabled = true;
+            toolStripButton3.Enabled = false;
             isModify = false;
             List<List<Chip>> originalChips = new List < List < Chip >>();
 
@@ -1989,7 +2061,7 @@ namespace FloorplanDesigner
                         if (chips[i][j].getRectangle().IntersectsWith(currentRectangle))
                         {
                             chips[i][j].addModule(currentModule);
-                            currentModule.addChip(chips[i][j]);
+                            currentModule.addChip(chips[i][j].clone());
                             isModify = true;
                         }
                     }
@@ -2020,18 +2092,78 @@ namespace FloorplanDesigner
                 moveSoftModule();
                 isModify = true;
             }
-
+            /*
             if(isModify)
             {
-                var currentState = (new List<List<Chip>>(originalChips), new List<Module>(originalModule));
-                undoStack.Push(currentState);
+                pushStack(undoStack);
                 redoStack.Clear();
                 toolStripButton2.Enabled = true;
-            }
+                toolStripButton3.Enabled = false;
+            }*/
 
             currentRectangle = new Rectangle(e.Location, new Size(0, 0));
             pictureBox1.Invalidate();
             updateModule();
+        }
+
+        private void pushStack(Stack<(List<List<List<string>>> ChipsContainModuleNames, List<List<Point>> ModulesContainChipsPoints)> stack)
+        {
+            List<List<List<string>>> chipsContainModuleNames = new List<List<List<string>>>();
+            List<List<Point>> moduleContainChipPoints = new List<List<Point>>();
+            for (int i = 0; i < chips.Count; i++)
+            {
+                List<List<string>> tempList = new List<List<string>>();
+                for (int j = 0; j < chips[i].Count; j++)
+                {
+                    List<string> nameList = new List<string>();
+                    for (int k = 0; k < chips[i][j].getModules().Count; k++)
+                        nameList.Add(chips[i][j].getModules()[k].getName());
+                    tempList.Add(nameList);
+                }
+                chipsContainModuleNames.Add(tempList);
+            }
+
+            for(int i =0;i<modules.Count;i++)
+            {
+                List<Point> pointList = new List<Point>();
+                for (int j = 0; j < modules[i].getChips().Count; j++)
+                    pointList.Add(modules[i].getChips()[j].getPoint());
+                moduleContainChipPoints.Add(pointList);
+            }
+            var currentState = (chipsContainModuleNames, moduleContainChipPoints);
+            stack.Push(currentState);
+        }
+
+        private void popStack(Stack<(List<List<List<string>>> ChipsContainModuleNames, List<List<Point>> ModulesContainChipsPoints)> stack)
+        {
+            var currentState = stack.Pop();
+            List<List<List<string>>> chipsContainModuleNames = currentState.ChipsContainModuleNames;
+            List<List<Point>> moduleContainChipPoints = currentState.ModulesContainChipsPoints;
+            for (int i = 0; i < chipsContainModuleNames.Count; i++)
+            {
+                for (int j = 0; j < chipsContainModuleNames[i].Count; j++)
+                {
+                    chips[i][j].removeAllModule();
+                    for (int k = 0; k < chipsContainModuleNames[i][j].Count; k++)
+                        chips[i][j].addModule(findModuleByName(chipsContainModuleNames[i][j][k]));
+                }
+            }
+            
+            for (int i = 0; i < moduleContainChipPoints.Count; i++)
+            {
+                modules[i].reMoveAllChip();
+                for (int j = 0; j < moduleContainChipPoints[i].Count; j++)
+                {
+                    for (int k = 0; k < chips.Count; k++)
+                    {
+                        for (int z = 0; z < chips[k].Count; z++)
+                        {
+                            if (chips[k][z].getPoint().X == moduleContainChipPoints[i][j].X && chips[k][z].getPoint().Y == moduleContainChipPoints[i][j].Y)
+                                modules[i].addChip(chips[k][z].clone());
+                        }
+                    }
+                }
+            }
         }
 
         //繪製移動後的softmodule
@@ -2062,7 +2194,12 @@ namespace FloorplanDesigner
             //位置偏移量
             int deltaX = moveX - downX;
             int deltaY = moveY - downY;
-            List<Chip> moduleChips = new List<Chip>(currentModule.getChips());
+            List<Chip> tempChips = new List<Chip>(currentModule.getChips());
+            List<Chip> moduleChips = new List<Chip>();
+            for(int i =0;i< tempChips.Count;i++)
+            {
+                moduleChips.Add(chips[tempChips[i].getPoint().X][tempChips[i].getPoint().Y]);
+            }
 
             //判斷是否所有包含的chip皆在範圍內
             for (int i = 0; i < moduleChips.Count; i++)
@@ -2085,11 +2222,17 @@ namespace FloorplanDesigner
             }
             //添加移動後的chip
             for (int i = 0; i < moduleChips.Count; i++)
-                currentModule.addChip(chips[moduleChips[i].getPoint().X + deltaX][moduleChips[i].getPoint().Y + deltaY]);
-            moduleChips = currentModule.getChips();
+                currentModule.addChip(chips[moduleChips[i].getPoint().X + deltaX][moduleChips[i].getPoint().Y + deltaY].clone());
+            tempChips = new List<Chip>(currentModule.getChips());
+            moduleChips = new List<Chip>();
+            for (int i = 0; i < tempChips.Count; i++)
+            {
+                moduleChips.Add(chips[tempChips[i].getPoint().X][tempChips[i].getPoint().Y]);
+            }
             //更新位置後的chip上添加此module
             for (int i = 0; i < moduleChips.Count; i++)
                 moduleChips[i].addModule(currentModule);
+            updateModule();
         }
 
         //畫出跟隨中鍵移動的softmodule
@@ -2228,23 +2371,10 @@ namespace FloorplanDesigner
             if (redoStack.Count > 0)
             {
                 // 將當前狀態壓入undoStack
-                undoStack.Push((new List<List<Chip>>(chips), new List<Module>(modules)));
-
+                pushStack(undoStack);
                 // 恢復下一步狀態
-                var nextState = redoStack.Pop();
-                chips = new List<List<Chip>>(nextState.Chips);
-                modules = new List<Module>(nextState.Modules);
-                for (int i = 0; i < softmodules.Count; i++)
-                {
-                    softmodules[i].setChips(modules[i].getChips());
-                    softmodules[i].calculateArea();
-                    softmodules[i].findBoundingRect();
-
-                }
-                draw();
-                displaySoftModuleInfo();
-                displayConnectionInfo();
-                displayErrorMessage();
+                popStack(redoStack);
+                updateModule();
                 if (redoStack.Count == 0)
                     toolStripButton3.Enabled = false;
                 if(undoStack.Count > 0)
@@ -2259,23 +2389,12 @@ namespace FloorplanDesigner
             if (undoStack.Count > 0)
             {
                 // 將當前狀態壓入redoStack
-                redoStack.Push((new List<List<Chip>>(chips), new List<Module>(modules)));
-
+                pushStack(redoStack);
                 // 恢復上一步狀態
-                var previousState = undoStack.Pop();
-                chips = new List<List<Chip>>(previousState.Chips);
-                modules = new List<Module>(previousState.Modules);
-                for (int i = 0; i < softmodules.Count; i++)
-                {
-                    softmodules[i].setChips(modules[i].getChips());
-                    softmodules[i].calculateArea();
-                    softmodules[i].findBoundingRect();
+                popStack(undoStack);
 
-                }
-                draw();
-                displaySoftModuleInfo();
-                displayConnectionInfo();
-                displayErrorMessage();
+                updateModule();
+
                 toolStripButton3.Enabled = true;
                 if (undoStack.Count == 0)
                     toolStripButton2.Enabled = false;
