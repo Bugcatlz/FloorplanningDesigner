@@ -1632,32 +1632,43 @@ namespace FloorplanDesigner
             }
             StreamWriter writeFile = new StreamWriter(outputFilePath);
 
-            List<List<int>> table = new List<List<int>>();
-            for (int j = 0; j < chips[0].Count; ++j)
-            {
-                List<int> line = new List<int>();
-                for (int i = 0; i < chips.Count; ++i)
-                {
-                    if (chips[i][j].getModules().Count == 0)
-                        line.Add(-1);
-                    else
-                        line.Add(findModuleIndex(chips[i][j].getModules()[0]));
-                }
-                table.Add(line); // 使用Add添加行
-            }
-            List<List<int>> rectangleData = FindAllRectRange(table);
-
             writeFile.WriteLine($"HPWL {total}");
             writeFile.WriteLine($"SOFTMODULE {softmodules.Count}");
             List<List<int>> Points = new List<List<int>>();
             for (int i = 0; i < softmodules.Count; ++i)
             {
+                List<List<int>> table = new List<List<int>>();
+                for (int j = 0; j < chips[0].Count; ++j)
+                {
+                    List<int> line = new List<int>();
+                    for (int k = 0; k < chips.Count; ++k)
+                    {
+                        if (chips[k][j].getModules().Count == 0)
+                            line.Add(-1);
+                        else
+                        {
+                            for (int z = 0; z < chips[k][j].getModules().Count; z++)
+                            {
+                                if (chips[k][j].getModules()[z].getName() == softmodules[i].getName())
+                                {
+                                    line.Add(i);
+                                    break;
+                                }
+                                if (z == chips[k][j].getModules().Count - 1)
+                                    line.Add(findModuleIndex(chips[k][j].getModules()[0]));
+                            }
+                        }
+                    }
+                    table.Add(line); // 使用Add添加行
+                }
+                List<List<int>> rectangleData = FindAllRectRange(table);
+
                 Points.Clear();
                 if (softmodules[i].getChips().Count == 0)
                     writeFile.WriteLine($"{softmodules[i].getName()} {0}");
                 else
                 {
-                    Points = NineBlocksScanning(i, rectangleData[i], table);
+                    Points = NineBlocksScanning(i, FindRange(i, table), table);
                     writeFile.WriteLine($"{softmodules[i].getName()} {Points.Count}");
                     for (int j = 0; j < Points.Count; ++j)
                         writeFile.WriteLine($"{Points[j][0]} {Points[j][1]}");
@@ -1752,33 +1763,43 @@ namespace FloorplanDesigner
                 return;
             StreamWriter writeFile = new StreamWriter(saveFileDialog1.FileName);
 
-
-            List<List<int>> table = new List<List<int>>();
-            for (int j = 0; j < chips[0].Count; ++j)
-            {
-                List<int> line = new List<int>();
-                for (int i = 0; i < chips.Count; ++i)
-                {
-                    if (chips[i][j].getModules().Count == 0)
-                        line.Add(-1);
-                    else
-                        line.Add(findModuleIndex(chips[i][j].getModules()[0]));
-                }
-                table.Add(line); // 使用Add添加行
-            }
-            List<List<int>> rectangleData = FindAllRectRange(table);
-
             writeFile.WriteLine($"HPWL {total}");
             writeFile.WriteLine($"SOFTMODULE {softmodules.Count}");
             List<List<int>> Points = new List<List<int>>();
             for (int i = 0; i < softmodules.Count; ++i)
             {
+                List<List<int>> table = new List<List<int>>();
+                for (int j = 0; j < chips[0].Count; ++j)
+                {
+                    List<int> line = new List<int>();
+                    for (int k = 0; k < chips.Count; ++k)
+                    {
+                        if (chips[k][j].getModules().Count == 0)
+                            line.Add(-1);
+                        else
+                        {
+                            for(int z = 0;z< chips[k][j].getModules().Count;z++)
+                            {
+                                if (chips[k][j].getModules()[z].getName() == softmodules[i].getName())
+                                {
+                                    line.Add(i);
+                                    break;
+                                }
+                                if(z == chips[k][j].getModules().Count - 1)
+                                    line.Add(findModuleIndex(chips[k][j].getModules()[0]));
+                            }
+                        }
+                    }
+                    table.Add(line); // 使用Add添加行
+                }
+                List<List<int>> rectangleData = FindAllRectRange(table);
+
                 Points.Clear();
                 if (softmodules[i].getChips().Count == 0)
                     writeFile.WriteLine($"{softmodules[i].getName()} {0}");
                 else
                 {
-                    Points = NineBlocksScanning(i, rectangleData[i], table);
+                    Points = NineBlocksScanning(i, FindRange(i, table), table);
                     writeFile.WriteLine($"{softmodules[i].getName()} {Points.Count}");
                     for (int j = 0; j < Points.Count; ++j)
                         writeFile.WriteLine($"{Points[j][0]} {Points[j][1]}");
