@@ -46,11 +46,11 @@
             this.label12 = new System.Windows.Forms.Label();
             this.textBox7 = new System.Windows.Forms.TextBox();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label18 = new System.Windows.Forms.Label();
-            this.textBox12 = new System.Windows.Forms.TextBox();
             this.label19 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
-            this.textBox13 = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
@@ -90,6 +90,8 @@
             this.panel6.SuspendLayout();
             this.panel7.SuspendLayout();
             this.panel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
             this.panel3.SuspendLayout();
@@ -138,6 +140,7 @@
             this.button2.TabIndex = 5;
             this.button2.Text = "OK";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // label14
             // 
@@ -224,6 +227,7 @@
             this.button3.TabIndex = 5;
             this.button3.Text = "OK";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // label11
             // 
@@ -255,15 +259,39 @@
             // panel4
             // 
             this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel4.Controls.Add(this.numericUpDown2);
+            this.panel4.Controls.Add(this.numericUpDown1);
             this.panel4.Controls.Add(this.label18);
-            this.panel4.Controls.Add(this.textBox12);
             this.panel4.Controls.Add(this.label19);
             this.panel4.Controls.Add(this.label20);
-            this.panel4.Controls.Add(this.textBox13);
             this.panel4.Location = new System.Drawing.Point(13, 523);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(558, 80);
             this.panel4.TabIndex = 32;
+            // 
+            // numericUpDown2
+            // 
+            this.numericUpDown2.Location = new System.Drawing.Point(392, 45);
+            this.numericUpDown2.Maximum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.numericUpDown2.Name = "numericUpDown2";
+            this.numericUpDown2.Size = new System.Drawing.Size(120, 22);
+            this.numericUpDown2.TabIndex = 9;
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(110, 45);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(120, 22);
+            this.numericUpDown1.TabIndex = 8;
             // 
             // label18
             // 
@@ -274,13 +302,6 @@
             this.label18.Size = new System.Drawing.Size(87, 16);
             this.label18.TabIndex = 7;
             this.label18.Text = "Chip Height:";
-            // 
-            // textBox12
-            // 
-            this.textBox12.Location = new System.Drawing.Point(392, 47);
-            this.textBox12.Name = "textBox12";
-            this.textBox12.Size = new System.Drawing.Size(132, 22);
-            this.textBox12.TabIndex = 6;
             // 
             // label19
             // 
@@ -302,13 +323,6 @@
             this.label20.TabIndex = 1;
             this.label20.Text = "Chip";
             // 
-            // textBox13
-            // 
-            this.textBox13.Location = new System.Drawing.Point(117, 47);
-            this.textBox13.Name = "textBox13";
-            this.textBox13.Size = new System.Drawing.Size(130, 22);
-            this.textBox13.TabIndex = 0;
-            // 
             // button4
             // 
             this.button4.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
@@ -318,6 +332,7 @@
             this.button4.TabIndex = 33;
             this.button4.Text = "Save File";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // panel2
             // 
@@ -608,6 +623,7 @@
             this.button1.TabIndex = 5;
             this.button1.Text = "OK";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // label2
             // 
@@ -657,6 +673,8 @@
             this.panel7.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).EndInit();
@@ -692,10 +710,8 @@
         private System.Windows.Forms.TextBox textBox7;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.TextBox textBox12;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.TextBox textBox13;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label5;
@@ -732,5 +748,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.NumericUpDown numericUpDown2;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
     }
 }

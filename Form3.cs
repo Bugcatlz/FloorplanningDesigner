@@ -685,6 +685,11 @@ namespace FloorplanDesigner
                         width = int.Parse(tokens[1]);
                         height = int.Parse(tokens[2]);
                         chipUnitSize = pictureBox1.Height / Math.Max(height + 1, width + 1);
+                        if(width >50 || height > 50)
+                        {
+                            MessageBox.Show("設定檔格式寬高超過限制", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return false;
+                        }
                         createChipList(width, height);
                         break;
                     case "SOFTMODULE":
@@ -700,7 +705,7 @@ namespace FloorplanDesigner
                         readInputConnected(reader, numConnection);
                         break;
                     default:
-                        MessageBox.Show("輸入檔格式錯誤", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("設定檔格式錯誤", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return false;
                 }
             }
@@ -723,12 +728,12 @@ namespace FloorplanDesigner
                         int softModuleCount = int.Parse(tokens[1]);
                         if (softModuleCount != softmodules.Count || !readOutputSoftModule(reader, softModuleCount))
                         {
-                            MessageBox.Show("輸入檔與輸出檔不相符!!", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show("設定檔與佈局檔不相符!!", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return false;
                         }
                         break;
                     default:
-                        MessageBox.Show("輸出檔格式錯誤!!", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("佈局檔格式錯誤!!", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return false;
                 }
             }
@@ -2409,42 +2414,50 @@ namespace FloorplanDesigner
             // 要執行的程式名稱
             string executableName = ".\\placement.exe";
 
-            // 輸入檔案路徑和輸出檔案路徑
-            string tempOutputFilePath = ".\\tempOutput.txt";
-            
-            string command = $"{executableName} {inputFilePath} {tempOutputFilePath}";
-
-            Process process = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo
+            if (File.Exists(executableName))
             {
-                FileName = "cmd.exe",
-                WorkingDirectory = currentDirectory, // 設定工作目錄為當前目錄
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+                // 輸入檔案路徑和輸出檔案路徑
+                string tempOutputFilePath = ".\\tempOutput.txt";
 
-            process.StartInfo = startInfo;
-            process.Start();
+                string command = $"{executableName} {inputFilePath} {tempOutputFilePath}";
 
-            // 寫入命令到命令行
-            process.StandardInput.WriteLine(command);
-            process.StandardInput.Flush();
-            process.StandardInput.Close();
+                Process process = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    WorkingDirectory = currentDirectory, // 設定工作目錄為當前目錄
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
 
-            // 等待命令執行完成
-            process.WaitForExit();
+                process.StartInfo = startInfo;
+                process.Start();
 
-            // 讀取命令輸出
-            //string output = process.StandardOutput.ReadToEnd();
+                // 寫入命令到命令行
+                process.StandardInput.WriteLine(command);
+                process.StandardInput.Flush();
+                process.StandardInput.Close();
 
-            // 顯示輸出或進行其他處理
-            //MessageBox.Show(output);
+                // 等待命令執行完成
+                process.WaitForExit();
 
-            process.Close();
-            readTempFile(tempOutputFilePath);
-            File.Delete(tempOutputFilePath);
+                // 讀取命令輸出
+                //string output = process.StandardOutput.ReadToEnd();
+
+                // 顯示輸出或進行其他處理
+                //MessageBox.Show(output);
+
+                process.Close();
+                readTempFile(tempOutputFilePath);
+                File.Delete(tempOutputFilePath);
+            }
+            else
+            {
+                // 未找到placement.exe，执行相应的处理逻辑
+                MessageBox.Show("無法開啟placement.exe", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         //redo

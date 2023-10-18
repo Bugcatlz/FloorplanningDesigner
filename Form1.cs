@@ -83,21 +83,16 @@ namespace FloorplanDesigner
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
 
-            // 计算新的宽度和高度比例
             double widthRatio = (double)this.ClientSize.Width / width;
             double heightRatio = (double)this.ClientSize.Height / height;
 
-            // 遍历窗体内的所有控件
             foreach (Control control in this.Controls)
             {
                 
-                // 获取控件的原始大小
                 Size originalSize = controlOriginalSizes[control];
                 Point originalPoint = controlOriginalPostions[control];
-                // 根据比例计算新的宽度
                 int newWidth = (int)(originalSize.Width * widthRatio);
 
-                // 根据比例计算新的高度，这里假设保持宽高比例
                 int newHeight = (int)(originalSize.Height * heightRatio);
 
                 int newX = (int)(originalPoint.X * widthRatio);
@@ -119,7 +114,6 @@ namespace FloorplanDesigner
 
                 }
 
-                // 设置控件的新大小
                 control.Size = new Size(newWidth, newHeight);
                 control.Location = new Point(newX, newY);
 

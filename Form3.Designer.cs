@@ -280,22 +280,22 @@
             // 儲存錯誤ToolStripMenuItem
             // 
             this.儲存錯誤ToolStripMenuItem.Name = "儲存錯誤ToolStripMenuItem";
-            this.儲存錯誤ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.儲存錯誤ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.儲存錯誤ToolStripMenuItem.Text = "儲存錯誤";
             this.儲存錯誤ToolStripMenuItem.Click += new System.EventHandler(this.儲存錯誤ToolStripMenuItem_Click);
             // 
             // 儲存圖片ToolStripMenuItem
             // 
             this.儲存圖片ToolStripMenuItem.Name = "儲存圖片ToolStripMenuItem";
-            this.儲存圖片ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.儲存圖片ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.儲存圖片ToolStripMenuItem.Text = "儲存圖片";
             this.儲存圖片ToolStripMenuItem.Click += new System.EventHandler(this.儲存圖片ToolStripMenuItem_Click);
             // 
             // 匯入檔案ToolStripMenuItem
             // 
             this.匯入檔案ToolStripMenuItem.Name = "匯入檔案ToolStripMenuItem";
-            this.匯入檔案ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.匯入檔案ToolStripMenuItem.Text = "匯入布局檔案";
+            this.匯入檔案ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.匯入檔案ToolStripMenuItem.Text = "匯入佈局檔案";
             this.匯入檔案ToolStripMenuItem.Click += new System.EventHandler(this.匯入檔案ToolStripMenuItem_Click);
             // 
             // toolStripDropDownButton1
@@ -317,22 +317,22 @@
             // 開啟設定檔案ToolStripMenuItem
             // 
             this.開啟設定檔案ToolStripMenuItem.Name = "開啟設定檔案ToolStripMenuItem";
-            this.開啟設定檔案ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.開啟設定檔案ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.開啟設定檔案ToolStripMenuItem.Text = "開啟設定檔案";
             this.開啟設定檔案ToolStripMenuItem.Click += new System.EventHandler(this.開啟設定檔案ToolStripMenuItem_Click);
             // 
             // 儲存檔案ToolStripMenuItem
             // 
             this.儲存檔案ToolStripMenuItem.Name = "儲存檔案ToolStripMenuItem";
-            this.儲存檔案ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.儲存檔案ToolStripMenuItem.Text = "儲存布局檔案";
+            this.儲存檔案ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.儲存檔案ToolStripMenuItem.Text = "儲存佈局檔案";
             this.儲存檔案ToolStripMenuItem.Click += new System.EventHandler(this.儲存檔案ToolStripMenuItem_Click);
             // 
             // 另存布局檔案ToolStripMenuItem
             // 
             this.另存布局檔案ToolStripMenuItem.Name = "另存布局檔案ToolStripMenuItem";
-            this.另存布局檔案ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.另存布局檔案ToolStripMenuItem.Text = "另存布局檔案";
+            this.另存布局檔案ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.另存布局檔案ToolStripMenuItem.Text = "另存佈局檔案";
             this.另存布局檔案ToolStripMenuItem.Click += new System.EventHandler(this.另存布局檔案ToolStripMenuItem_Click);
             // 
             // toolStrip1

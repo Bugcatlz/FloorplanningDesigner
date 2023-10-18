@@ -63,6 +63,11 @@ namespace FloorplanDesigner
                     TextBox textBox = (TextBox)control;
                     controlOriginalTextSizes[control] = textBox.Font.Size;
                 }
+                else if (control is NumericUpDown)
+                {
+                    NumericUpDown numericUpDown = (NumericUpDown)control;
+                    controlOriginalTextSizes[control] = numericUpDown.Font.Size;
+                }
                 else if(control is DataGridView)
                 {
                     DataGridView dataGridView = (DataGridView)control;
@@ -81,7 +86,6 @@ namespace FloorplanDesigner
                     }
                 }
 
-                // 如果控件是容器控件，递归保存其内部控件的属性
                 if (control is Panel)
                 {
                     SaveOriginalProperties(control);
@@ -195,7 +199,7 @@ namespace FloorplanDesigner
 
         private void button4_Click(object sender, EventArgs e)
         {
-            string output = "CHIP " + textBox13.Text  + " "+ textBox12.Text + "\n";
+            string output = "CHIP " + numericUpDown1.Value.ToString()  + " "+ numericUpDown2.Value.ToString() + "\n";
             int softModuleCount = dataGridView1.RowCount - 1;
             output += "SOFTMODULE " + softModuleCount.ToString() + "\n";
             foreach (DataGridViewRow row in dataGridView1.Rows)
@@ -221,7 +225,7 @@ namespace FloorplanDesigner
                     output += name + " " + x + " " + y + " " + w + " " + h +"\n";
                 }
             }
-            int ConnectionCount = dataGridView3.RowCount;
+            int ConnectionCount = dataGridView3.RowCount - 1;
             output += "CONNECTION " + ConnectionCount.ToString() + "\n";
             foreach (DataGridViewRow row in dataGridView3.Rows)
             {
@@ -233,7 +237,7 @@ namespace FloorplanDesigner
                     output += name1 + " " + name2 + " " + conn + "\n";
                 }
             }
-            output += '\n';
+            //output += '\n';
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
             saveFileDialog1.Filter = "Text Files (*.txt)|*.txt";
@@ -253,21 +257,16 @@ namespace FloorplanDesigner
 
         private void Form2_SizeChanged(object sender, EventArgs e)
         {
-            // 计算新的宽度和高度比例
             double widthRatio = (double)this.ClientSize.Width / width;
             double heightRatio = (double)this.ClientSize.Height / height;
 
-            // 遍历窗体内的所有控件
             foreach (Control control in this.Controls)
             {
                 
-                // 获取控件的原始大小
                 Size originalSize = controlOriginalSizes[control];
                 Point originalPoint = controlOriginalPostions[control];
-                // 根据比例计算新的宽度
                 int newWidth = (int)(originalSize.Width * widthRatio);
 
-                // 根据比例计算新的高度，这里假设保持宽高比例
                 int newHeight = (int)(originalSize.Height * heightRatio);
 
                 int newX = (int)(originalPoint.X * widthRatio);
@@ -288,8 +287,8 @@ namespace FloorplanDesigner
                     button.Font = new Font(button.Font.FontFamily, newFontSize);
 
                 }
+               
 
-                // 设置控件的新大小
                 control.Size = new Size(newWidth, newHeight);
                 control.Location = new Point(newX, newY);
                 if (control is Panel)
@@ -301,20 +300,15 @@ namespace FloorplanDesigner
     
         private void resizeControl(Control parentControl)
         {
-            // 计算新的宽度和高度比例
             double widthRatio = (double)this.ClientSize.Width / width;
             double heightRatio = (double)this.ClientSize.Height / height;
 
-            // 遍历窗体内的所有控件
             foreach (Control control in parentControl.Controls)
             {
-                // 获取控件的原始大小
                 Size originalSize = controlOriginalSizes[control];
                 Point originalPoint = controlOriginalPostions[control];
-                // 根据比例计算新的宽度
                 int newWidth = (int)(originalSize.Width * widthRatio);
 
-                // 根据比例计算新的高度，这里假设保持宽高比例
                 int newHeight = (int)(originalSize.Height * heightRatio);
 
                 int newX = (int)(originalPoint.X * widthRatio);
@@ -341,12 +335,17 @@ namespace FloorplanDesigner
                     newFontSize = controlOriginalTextSizes[control] * (float)widthRatio;
                     textBox.Font = new Font(textBox.Font.FontFamily, newFontSize);
                 }
+                else if (control is NumericUpDown)
+                {
+                    NumericUpDown numericUpDown = (NumericUpDown)control;
+                    newFontSize = controlOriginalTextSizes[control] * (float)widthRatio;
+                    numericUpDown.Font = new Font(numericUpDown.Font.FontFamily, newFontSize);
+                }
                 else if(control is DataGridView)
                 {
                     DataGridView dataGridView = (DataGridView)control;
                     newFontSize = controlOriginalTextSizes[control] * (float)widthRatio;
                     dataGridView.Font = new Font(dataGridView.Font.FontFamily, newFontSize);
-                    // 调整列宽度
                     foreach (DataGridViewColumn column in dataGridView.Columns)
                     {
                         if (controlOriginalColumnWidths.TryGetValue(column, out int originalWidth))
@@ -355,7 +354,6 @@ namespace FloorplanDesigner
                         }
                     }
 
-                    // 调整行高度
                     foreach (DataGridViewRow row in dataGridView.Rows)
                     {
                         if (controlOriginalRowHeights.TryGetValue(row, out int originalHeight))
@@ -368,7 +366,6 @@ namespace FloorplanDesigner
                 {
                     resizeControl(control);
                 }
-                // 设置控件的新大小
                 control.Size = new Size(newWidth, newHeight);
                 control.Location = new Point(newX, newY);
             }
